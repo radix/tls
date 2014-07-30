@@ -2,6 +2,8 @@ from enum import Enum
 
 from characteristic import attributes
 
+from six import StringIO
+
 from tls import _constructs
 
 
@@ -33,11 +35,13 @@ def parse_tls_plaintext(bytes):
     :param bytes: the bytes representing the input.
     :return: TLSPlaintext object.
     """
-    construct = _constructs.TLSPlaintext.parse(bytes)
-    return TLSPlaintext(
+    bytesio = StringIO(bytes)
+    construct = _constructs.TLSPlaintext.parse_stream(bytesio)
+    structured = TLSPlaintext(
         type=ContentType(construct.type),
         version=ProtocolVersion(
             major=construct.version.major,
             minor=construct.version.minor),
         length=construct.length,
         fragment=construct.fragment)
+    return (structured, bytesio.read())

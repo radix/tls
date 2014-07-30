@@ -28,9 +28,21 @@ class TestRecordParsing(object):
             + chr(0) + chr(10)  # big-endian length
             + '0123456789'  # fragment
         ).encode("ascii")
-        record = parse_tls_plaintext(packet)
+        record, remaining = parse_tls_plaintext(packet)
         assert record.type == ContentType.handshake
         assert record.version.major == 3
         assert record.version.minor == 3
         assert record.length == 10
         assert record.fragment == b'0123456789'
+        assert remaining == ''
+
+    def test_parse_tls_plaintext_remaining(self):        
+        packet = (
+            chr(22)  # type
+            + chr(3)  # major version
+            + chr(3)  # minor version
+            + chr(0) + chr(10)  # big-endian length
+            + '0123456789abc123'  # fragment
+        ).encode("ascii")
+        record, remaining = parse_tls_plaintext(packet)
+        assert remaining == 'abc123'

@@ -10,5 +10,6 @@ setuptools.setup(
         "construct",
         "enum34",
         "characteristic",
+        "six",
     ]
 )
