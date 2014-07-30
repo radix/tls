@@ -34,9 +34,13 @@ class TestRecordParsing(object):
         assert record.version.minor == 3
         assert record.length == 10
         assert record.fragment == b'0123456789'
-        assert remaining == ''
+        assert remaining == b''
 
-    def test_parse_tls_plaintext_remaining(self):        
+    def test_parse_tls_plaintext_remaining(self):
+        """
+        Any remaining unparsed bytes are returned as the second item in the
+        tuple.
+        """
         packet = (
             chr(22)  # type
             + chr(3)  # major version
@@ -45,4 +49,4 @@ class TestRecordParsing(object):
             + '0123456789abc123'  # fragment
         ).encode("ascii")
         record, remaining = parse_tls_plaintext(packet)
-        assert remaining == 'abc123'
+        assert remaining == b'abc123'
